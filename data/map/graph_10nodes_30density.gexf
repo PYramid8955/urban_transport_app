@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+  <meta lastmodifieddate="2025-11-15">
+    <creator>NetworkX 3.3</creator>
+  </meta>
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <nodes>
+      <node id="Shopping Mall" label="Shopping Mall" />
+      <node id="North Point" label="North Point" />
+      <node id="Little Italy" label="Little Italy" />
+      <node id="The Pier" label="The Pier" />
+      <node id="The Factory" label="The Factory" />
+      <node id="The Zenith" label="The Zenith" />
+      <node id="Triumph Square" label="Triumph Square" />
+      <node id="Cobalt Point" label="Cobalt Point" />
+      <node id="East Gate" label="East Gate" />
+      <node id="The Apex" label="The Apex" />
+    </nodes>
+    <edges>
+      <edge source="Shopping Mall" target="East Gate" id="0" />
+      <edge source="Shopping Mall" target="The Pier" id="1" />
+      <edge source="Shopping Mall" target="Little Italy" id="2" />
+      <edge source="North Point" target="The Apex" id="3" />
+      <edge source="North Point" target="Triumph Square" id="4" />
+      <edge source="Little Italy" target="The Pier" id="5" />
+      <edge source="The Pier" target="The Factory" id="6" />
+      <edge source="The Pier" target="The Zenith" id="7" />
+      <edge source="The Pier" target="Cobalt Point" id="8" />
+      <edge source="The Factory" target="The Zenith" id="9" />
+      <edge source="Triumph Square" target="Cobalt Point" id="10" />
+      <edge source="Triumph Square" target="The Apex" id="11" />
+      <edge source="Cobalt Point" target="The Apex" id="12" />
+    </edges>
+  </graph>
+</gexf>

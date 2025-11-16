@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+  <meta lastmodifieddate="2025-11-15">
+    <creator>NetworkX 3.3</creator>
+  </meta>
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <nodes>
+      <node id="Metro Center" label="Metro Center" />
+      <node id="Northwood" label="Northwood" />
+      <node id="City Center" label="City Center" />
+      <node id="The Limit" label="The Limit" />
+      <node id="Heritage Point" label="Heritage Point" />
+      <node id="North Harbor" label="North Harbor" />
+      <node id="West Mall" label="West Mall" />
+      <node id="Gully Path" label="Gully Path" />
+      <node id="East Bank" label="East Bank" />
+      <node id="Sand Dunes" label="Sand Dunes" />
+    </nodes>
+    <edges>
+      <edge source="Metro Center" target="Heritage Point" id="0" />
+      <edge source="Northwood" target="The Limit" id="1" />
+      <edge source="Northwood" target="Gully Path" id="2" />
+      <edge source="Northwood" target="Sand Dunes" id="3" />
+      <edge source="City Center" target="The Limit" id="4" />
+      <edge source="The Limit" target="North Harbor" id="5" />
+      <edge source="Heritage Point" target="Sand Dunes" id="6" />
+      <edge source="West Mall" target="Sand Dunes" id="7" />
+      <edge source="East Bank" target="Sand Dunes" id="8" />
+    </edges>
+  </graph>
+</gexf>

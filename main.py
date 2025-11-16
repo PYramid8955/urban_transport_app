@@ -1,8 +1,10 @@
-import sys
-from PyQt5 import QtWidgets, uic
+# import sys
+# from PyQt5 import QtWidgets, uic
 
-def main():
-	pass
+# def main():
+# 	pass
 
-if __name__ == "__main__":
-	main()
+# if __name__ == "__main__":
+# 	main()
+
+
