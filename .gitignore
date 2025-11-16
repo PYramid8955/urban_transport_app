@@ -1,7 +1,7 @@
 # links (user-added)
 activate
 designer
-.gexf
+*.gexf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
