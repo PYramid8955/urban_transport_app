@@ -3,6 +3,7 @@ import networkx as nx
 import math
 
 class AStarTransport:
+    
     def __init__(self, graph, node_coords=None, heuristic_func=None):
         
         if isinstance(graph, (nx.Graph, nx.DiGraph)):
