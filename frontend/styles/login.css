@@ -11,6 +11,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+     background-image: url("../photo_5285235898486296167_y.jpg"); 
+    background-repeat: no-repeat;
+    background-position: -100px 450px;
+    background-size: 850px; 
 }
 
 .login-box {
