@@ -1,0 +1,132 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: white;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    width: 480px;
+    padding: 55px;
+    border-radius: 22px;
+
+    background: linear-gradient(to bottom, #8bbcff, #ffffff);
+
+    color: #333;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.20);
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 45px;
+    font-size: 30px;
+    font-weight: 700;
+    color: #2d5fff;
+}
+
+.input-field {
+    display: flex;
+    align-items: center;
+    margin: 22px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    padding-bottom: 8px;
+    position: relative;
+}
+
+.input-field i {
+    margin-right: 12px;
+    font-size: 18px;
+    color: #444;
+}
+
+.input-field input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.input-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+    padding-bottom: 8px;
+}
+
+.input-field::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    background: rgba(0,0,0,0.25);
+}
+
+.focus-line {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: #2d5fff;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform 0.35s ease;
+}
+
+.input-field input:focus ~ .focus-line {
+    transform: translateX(-50%) scaleX(1);
+}
+
+
+.toggle-password {
+    position: absolute;
+    right: 0;
+    cursor: pointer;
+    font-size: 18px;
+    color: #666;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+.login-btn {
+    width: 170px;
+    margin: 35px auto 0;
+    display: block;
+    background: #ffffff;
+    color: #444;
+    border: none;
+    padding: 14px 0;
+    border-radius: 30px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
+    border: 1px solid #d0d0d0;
+}
+
+.login-btn:hover {
+    transform: translateY(-3px);
+    background: #f1f1f1;
+}
+
+.error-msg {
+    margin-top: 15px;
+    color: #c20000;
+    font-size: 14px;
+    display: none;
+}
