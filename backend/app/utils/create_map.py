@@ -90,8 +90,8 @@ if __name__ == "__main__":
 
     # create a graph with custom travel times and traffic
     G = create_map(
-        100, 
-        0.3, 
+        250, 
+        0.5, 
         '../data/map', 
         stations,
         min_travel_time=1,    # 5 minutes minimum travel time

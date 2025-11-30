@@ -5,6 +5,13 @@ from math import ceil
 
 # the desired route lenght in minutes (approx.), one way
 route_length = 45
+main_graph = nx.Graph()
+
+def compute_time(path):
+    res = 0
+    for i in range(len(path)-1):
+        res += main_graph[path[i]][path[i+1]]['travel_time']
+    return res
 
 def compute_hub_graph(hubs, astar):
     hub_nodes = list([hub[1] for hub in hubs])
@@ -20,28 +27,33 @@ def compute_hub_graph(hubs, astar):
             v = hub_nodes[j]
 
             res = astar.find_path(u, v)
-            dist = res['total_time']
-            avg_time += dist
+            avg_time += compute_time(res['path'])
 
-            G.add_edge(u, v, weight=dist)
+            G.add_edge(u, v, weight=res['total_time'])
 
     avg_time /= (len(hub_nodes) * (len(hub_nodes) - 1)) / 2
     return G, avg_time
 
 
-def assign_routes(R: nx.Graph, route, number):
+def assign_routes(R: nx.MultiGraph, route, number, astar):
     for i in range(len(route)-1):
-        R.add_edge(route[i], route[i+1], number = number)
-    return {number: route}
+        path = [route[i], route[i+1]] if main_graph.has_edge(route[i], route[i+1]) else astar.find_path(route[i], route[i+1])['path']
+        for j in range(len(path)-1):
+            R.add_edge(path[j], path[j+1], number = number, travel_time = main_graph[path[j]][path[j+1]]['travel_time'], 
+                       traffic = main_graph[path[j]][path[j+1]]['traffic'], weight = main_graph[path[j]][path[j+1]]['weight'])
+    return [number, route]
 
 
-def gen_routes(G: nx.Graph, min_inter_station_time = 1, max_inter_station_time = 10):
-    R = nx.Graph() # routes-only graph
+def gen_routes(G: nx.Graph, min_inter_station_time = 1, max_inter_station_time = 10, verbose=False):
+    global main_graph
+    R = nx.MultiGraph() # routes-only graph
     R.add_nodes_from(G.nodes())
+
+    main_graph = G
 
     astarG = AStarTransport(G)
 
-    res = {'betweeness_centrality': betweenness_centrality(G, astarG), 'routes': []}
+    res = {'betweeness_centrality': betweenness_centrality(G, astarG, verbose=verbose), 'routes': []}
     print('Generated scores for all nodes with BC.')
 
     working_G = G
@@ -56,9 +68,14 @@ def gen_routes(G: nx.Graph, min_inter_station_time = 1, max_inter_station_time =
         parts, clusters = metis_partition(working_G, k=k_clusters, balance_tol=0.05, scale=100)
         #2. get routes
         for i, cluster in clusters.items():
-            route, cost = simulated_annealing(G, cluster)
-            res['routes'].append(assign_routes(R, route, i + len(res['routes'])))
-            print(f"Used SA to generate route {len(res['routes'])} with cost {cost}.")
+            route, cost, _ = simulated_annealing(working_G, cluster, temperature=500, max_iter=500, alpha=0.97)
+            res['routes'].append(assign_routes(R, route, len(res['routes']), astarG))
+            if verbose: print(f"Used SA to generate route {res['routes'][-1][0]} with cost {cost}.")
+            if cost == float('inf'): raise Exception("Can't have infinite cost!")
+            if verbose:
+                print(f"\n=== ROUTE {res['routes'][-1][0]} ===")
+                print('\n'.join([f'{route[i]} -> {route[i+1]}' for i in range(0, len(route)-1, 1)]))
+            
 
         if (len(clusters) == 1): return (R, res)
         #3. gen hubs    
@@ -76,11 +93,75 @@ def gen_routes(G: nx.Graph, min_inter_station_time = 1, max_inter_station_time =
 
         print('Computed hub graph successfully! Now running the whole thing again, but on the hubs')
 
+def print_routes_sorted(R):
+    edges = []
+
+    # IMPORTANT: MultiGraph must use keys=True
+    for u, v, key, data in R.edges(keys=True, data=True):
+        edges.append((data["number"], u, v, data))
+
+    edges.sort(key=lambda x: x[0])
+
+    current = None
+    for number, u, v, data in edges:
+        if number != current:
+            print(f"\n=== ROUTE {number} ===")
+            current = number
+
+        print(f"{u} -> {v}")
+
+import json
+import networkx as nx
+
+def multigraph_to_cytoscape_json(R: nx.MultiGraph, save_path: str | None = None):
+
+    cy_nodes = []
+    cy_edges = []
+
+    # ---- Convert nodes ----
+    for node in R.nodes():
+        cy_nodes.append({
+            "data": {
+                "id": node,
+                "label": node
+            }
+        })
+
+    # ---- Convert edges (including multi-edges) ----
+    # Cytoscape.js requires unique edge IDs → use f"{u}_{v}_{key}"
+    for u, v, key, data in R.edges(keys=True, data=True):
+        edge_id = f"{u}__{v}__{key}"
+
+        cy_edges.append({
+            "data": {
+                "id": edge_id,
+                "source": u,
+                "target": v,
+                # copy all edge attributes (route number, travel_time, etc.)
+                **data
+            }
+        })
+
+    cy_json = {
+        "elements": {
+            "nodes": cy_nodes,
+            "edges": cy_edges
+        }
+    }
+
+    # ---- Save if path is given ----
+    if save_path:
+        with open(save_path, "w", encoding="utf-8") as f:
+            json.dump(cy_json, f, indent=2, ensure_ascii=False)
+
+    return cy_json
+
 if __name__ == "__main__":
-    G = nx.read_gexf('../data/map/graph_100nodes_30density.gexf')
-    R, res = gen_routes(G)
-    from pyvis.network import Network
-    net = Network(notebook=False, width="100vw", height="100vh", bgcolor="#ffffff")
-    net.from_nx(R)
-    # net.write_html("graph.html", notebook=False, open_browser=True)
-    net.write_html("routes_.html")
+    G = nx.read_gexf('../data/map/graph_10nodes_100density.gexf')
+    
+    R, res = gen_routes(G, verbose=True)
+    nx.write_gexf(R, "routes_.gexf")
+
+    print_routes_sorted(R)
+
+    multigraph_to_cytoscape_json(R, "graph.json")
