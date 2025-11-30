@@ -1,0 +1,139 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    background: white;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+#bg_img {
+    height: 70%;
+    opacity: 0.7;
+    left: -22vw;
+    bottom: -9vh;
+    position: absolute;
+}
+
+.login-box {
+    z-index: 10;
+    color: #333;
+    width: 480px;
+    padding: 55px;
+    text-align: center;
+    border-radius: 22px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.20);
+    background: linear-gradient(to bottom, #bbb, #ffffff);
+}
+
+h2 {
+    color: #000;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 45px;
+}
+
+.input-field {
+    display: flex;
+    margin: 22px 0;
+    position: relative;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.input-field i {
+    color: #444;
+    font-size: 18px;
+    margin-right: 12px;
+}
+
+.input-field input {
+    width: 100%;
+    border: none;
+    outline: none;
+    color: #333;
+    font-size: 16px;
+    background: transparent;
+}
+
+.input-field {
+    display: flex;
+    margin: 25px 0;
+    position: relative;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.input-field::before {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    content: "";
+    position: absolute;
+    background: rgba(0,0,0,0.25);
+}
+
+.focus-line {
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    height: 1px;
+    background: #000;
+    position: absolute;
+    transform-origin: center;
+    transition: transform 0.35s ease;
+    transform: translateX(-50%) scaleX(0);
+}
+
+.input-field input:focus ~ .focus-line {
+    transform: translateX(-50%) scaleX(1);
+}
+
+
+.toggle-password {
+    right: 0;
+    color: #666;
+    font-size: 18px;
+    cursor: pointer;
+    position: absolute;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+.login-btn {
+    width: 170px;
+    border: none;
+    color: #444;
+    display: block;
+    padding: 14px 0;
+    font-size: 17px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.25s;
+    border-radius: 30px;
+    margin: 35px auto 0;
+    background: #ffffff;
+    border: 1px solid #d0d0d0;
+}
+
+.login-btn:hover {
+    background: #f1f1f1;
+    transform: translateY(-3px);
+}
+
+.error-msg {
+    display: none;
+    color: #c20000;
+    font-size: 14px;
+    margin-top: 15px;
+}

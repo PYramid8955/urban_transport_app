@@ -7,3 +7,6 @@ def get_html_map_raw(path):
     net.from_nx(G)
     # net.write_html("graph.html", notebook=False, open_browser=True)
     return net.generate_html()
+
+if __name__ == "__main__":
+    print(get_html_map_raw('../data/map/graph_100nodes_30density.gexf'))

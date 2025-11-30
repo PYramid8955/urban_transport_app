@@ -19,7 +19,7 @@ class AStarTransport:
         if heuristic_func:
             self.heuristic_func = heuristic_func
         elif node_coords:
-            # Heuristica Euclidiană
+            # euristica Euclidiana
             self.heuristic_func = lambda n, end: math.hypot(
                 node_coords[end][0] - node_coords[n][0],
                 node_coords[end][1] - node_coords[n][1]
