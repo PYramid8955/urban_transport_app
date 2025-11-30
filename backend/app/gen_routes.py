@@ -2,6 +2,7 @@
 from services import *
 import networkx as nx
 from math import ceil
+from utils import multigraph_to_cytoscape_json
 
 # the desired route lenght in minutes (approx.), one way
 route_length = 45
@@ -110,51 +111,6 @@ def print_routes_sorted(R):
 
         print(f"{u} -> {v}")
 
-import json
-import networkx as nx
-
-def multigraph_to_cytoscape_json(R: nx.MultiGraph, save_path: str | None = None):
-
-    cy_nodes = []
-    cy_edges = []
-
-    # ---- Convert nodes ----
-    for node in R.nodes():
-        cy_nodes.append({
-            "data": {
-                "id": node,
-                "label": node
-            }
-        })
-
-    # ---- Convert edges (including multi-edges) ----
-    # Cytoscape.js requires unique edge IDs → use f"{u}_{v}_{key}"
-    for u, v, key, data in R.edges(keys=True, data=True):
-        edge_id = f"{u}__{v}__{key}"
-
-        cy_edges.append({
-            "data": {
-                "id": edge_id,
-                "source": u,
-                "target": v,
-                # copy all edge attributes (route number, travel_time, etc.)
-                **data
-            }
-        })
-
-    cy_json = {
-        "elements": {
-            "nodes": cy_nodes,
-            "edges": cy_edges
-        }
-    }
-
-    # ---- Save if path is given ----
-    if save_path:
-        with open(save_path, "w", encoding="utf-8") as f:
-            json.dump(cy_json, f, indent=2, ensure_ascii=False)
-
-    return cy_json
 
 if __name__ == "__main__":
     G = nx.read_gexf('../data/map/graph_10nodes_100density.gexf')
