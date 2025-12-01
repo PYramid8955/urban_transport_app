@@ -6,9 +6,9 @@ const stations = [
     "Ocnita",
     "Leuseni",
     "Stefan-Voda",
+    "",
 ];
 
-/* UNIVERSAL DROPDOWN SETUP */
 function setupDropdown(inputId, dropdownId) {
     const input = document.getElementById(inputId);
     const dropdown = document.getElementById(dropdownId);
@@ -43,8 +43,5 @@ function setupDropdown(inputId, dropdownId) {
     });
 }
 
-/* SETUP DROPDOWNS */
-setupDropdown("delFrom", "delFromDropdown");
-setupDropdown("delTo", "delToDropdown");
 setupDropdown("fromInput", "fromDropdown");
 setupDropdown("toInput", "toDropdown");

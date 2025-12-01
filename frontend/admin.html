@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel - Urban Transport App</title>
+    <link rel="stylesheet" href="styles/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <span>
+            <i>(UTA) Urban Transport App</i>
+            • <span class="admin-panel-title">Admin Panel</span>
+        </span>
+    </div>
+
+    <div class="nav-right">
+        <a class="admin-btn">User View</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- LEFT SIDE: GRAPH -->
+    <div class="graph-area">
+        <div class="graph-box">
+            <div class="placeholder-text">Locul pentru graf</div>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right-panels">
+
+        <!-- PANEL 1: DELETE EDGE -->
+        <div class="panel">
+            <h2>Delete Edge</h2>
+
+            <div class="input-group">
+                <label>From:</label>
+                <input type="text" id="delFrom" placeholder="Station name...">
+                <ul id="delFromDropdown" class="dropdown hidden"></ul>
+            </div>
+
+            <div class="input-group">
+                <label>To:</label>
+                <input type="text" id="delTo" placeholder="Station name...">
+                <ul id="delToDropdown" class="dropdown hidden"></ul>
+            </div>
+
+            <button class="delete-btn">Stergeti ruta</button>
+        </div>
+
+        <!-- PANEL 2: FIND ROUTE -->
+        <div class="panel">
+            <h2>Find Route</h2>
+
+            <div class="input-group">
+                <label>From:</label>
+                <input type="text" id="fromInput" placeholder="Station name...">
+                <ul id="fromDropdown" class="dropdown hidden"></ul>
+            </div>
+
+            <div class="input-group">
+                <label>To:</label>
+                <input type="text" id="toInput" placeholder="Station name...">
+                <ul id="toDropdown" class="dropdown hidden"></ul>
+            </div>
+
+            <div class="result-box" id="resultBox">Nothing to show</div>
+
+        
+        </div>
+
+    </div>
+</div>
+
+<script src="scripts/admin.js"></script>
+</body>
+</html>
