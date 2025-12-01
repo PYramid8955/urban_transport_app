@@ -1,8 +1,8 @@
 # here we use everything to create routes, edit the database and so on
-from services import *
+from app.services import *
 import networkx as nx
 from math import ceil
-from utils import multigraph_to_cytoscape_json
+from app.utils import multigraph_to_cytoscape_json
 
 class RouteManager:
     # the desired route lenght in minutes (approx.), one way

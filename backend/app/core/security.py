@@ -1,23 +1,23 @@
 from passlib.context import CryptContext
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import jwt
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+class Security:
+    def __init__(self, secret_key: str, algorithm: str = "HS256"):
+        self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        self.secret_key = secret_key
+        self.algorithm = algorithm
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    # Password hashing
+    def hash_password(self, password: str) -> str:
+        return self.pwd_context.hash(password)
 
-def verify_password(password: str, hashed: str) -> bool:
-    return pwd_context.verify(password, hashed)
+    def verify_password(self, password: str, hashed: str) -> bool:
+        return self.pwd_context.verify(password, hashed)
 
-# JWT token handling
-SECRET_KEY = "supersecretkey"
-ALGORITHM = "HS256"
-
-def create_access_token(data: dict, expires_delta: timedelta):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    # JWT
+    def create_access_token(self, data: dict, expires_delta: timedelta):
+        to_encode = data.copy()
+        expire = datetime.now(timezone.utc) + expires_delta
+        to_encode.update({"exp": expire})
+        return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)

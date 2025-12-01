@@ -1,4 +1,4 @@
-from services import AStarTransport
+from app.services import AStarTransport
 
 def betweenness_centrality(G, astar, normalized=True, verbose = False):
     nodes = list(G.nodes())

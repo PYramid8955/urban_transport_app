@@ -1,7 +1,7 @@
 import networkx as nx
 import random
 from collections import defaultdict
-from models import BucketQueue
+from app.models import BucketQueue
 
 # very small constant that we'll use
 EPS = 1e-9
