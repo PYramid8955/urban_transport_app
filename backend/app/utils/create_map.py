@@ -2,9 +2,10 @@ import networkx as nx
 import os
 import random
 import math
+from json import loads
 
 # creates a random connected graph with station names instead of numbers.
-def create_map(nodes, density, path='', station_names=None, 
+def create_map(nodes, density, path='', station_names_path=None, 
                min_travel_time=1, max_travel_time=60,
                min_traffic=10, max_traffic=1000):
     if nodes < 1:
@@ -15,6 +16,10 @@ def create_map(nodes, density, path='', station_names=None,
         raise ValueError("Travel times must be positive")
     if min_traffic <= 0 or max_traffic <= 0:
         raise ValueError("Traffic values must be positive")
+    
+    station_names = None
+    with open(station_names_path, 'r') as f: 
+        station_names = loads(f.read())['stations']
     
     if station_names is None:
         station_names = [f"Station_{i}" for i in range(nodes)]
@@ -84,16 +89,12 @@ def print_graph_info(G):
 
 # for testing:
 if __name__ == "__main__":
-    from json import loads
-    with open('../data/station_names.json', 'r') as f: 
-        stations = loads(f.read())['stations']
-
     # create a graph with custom travel times and traffic
     G = create_map(
         250, 
         0.5, 
         '../data/map', 
-        stations,
+        '../data/station_names.json',
         min_travel_time=1,    # 5 minutes minimum travel time
         max_travel_time=10,   # 45 minutes maximum travel time  
         min_traffic=10,       # 50 passengers minimum

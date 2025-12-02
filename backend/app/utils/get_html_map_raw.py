@@ -1,3 +1,5 @@
+# DEPRECATED (WON'T USE IT)
+
 from pyvis.network import Network
 import networkx as nx
 

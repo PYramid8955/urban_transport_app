@@ -6,6 +6,7 @@ from app.utils import multigraph_to_cytoscape_json
 
 class RouteManager:
     # the desired route lenght in minutes (approx.), one way
+    # using a list to be able to return to the initial graph after removing edges
     Routes = []
 
     def __init__(self, G: nx.Graph, route_length = 45, min_inter_station_time = 1, max_inter_station_time = 10):
@@ -132,6 +133,35 @@ class RouteManager:
                 R.add_edge(a, b, **attrs)
 
         return True
+
+    def shortest_route_path(self, start, end):
+        R = self.Routes[-1]
+        G_simple = nx.Graph()
+
+        for u, v, data in R.edges(data=True):
+            w = data["weight"]
+
+            if G_simple.has_edge(u, v):
+                if w < G_simple[u][v]["weight"]:
+                    G_simple[u][v]["weight"] = w
+            else:
+                G_simple.add_edge(u, v, weight=w)
+
+        astar = AStarTransport(G_simple)
+        result = astar.find_path(start, end)
+        path = result["path"]
+        out = nx.MultiGraph()
+
+        out.add_nodes_from(path)
+
+        for i in range(len(path) - 1):
+            u, v = path[i], path[i + 1]
+
+            if R.has_edge(u, v):
+                for key, attrs in R[u][v].items():
+                    out.add_edge(u, v, **attrs)
+
+        return {'graph': out, 'path': path}
 
 
     @staticmethod

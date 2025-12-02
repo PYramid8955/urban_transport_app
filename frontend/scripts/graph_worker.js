@@ -17,7 +17,6 @@ function setupDropdown(inputId, dropdownId) {
         }
 
         const results = stations.filter(s => s.toLowerCase().includes(text));
-
         if (results.length === 0) {
             dropdown.classList.add("hidden");
             return;
@@ -49,6 +48,7 @@ async function tryPathCalculate() {
 
     if (from === "" || to === "") {
         rebuildCytoscape(originalCyData);
+        document.getElementById("resultBox").innerHTML = "";
         return;
     }
 
@@ -57,7 +57,13 @@ async function tryPathCalculate() {
     const res = await fetch(`/user_path?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
     if (!res.ok) return;
 
-    const newGraph = await res.json();
+    const data = await res.json();
+
+    const newGraph = data.graph;
+    const pathList = data.path;
+
+    document.getElementById("resultBox").innerHTML = pathList.join(" → ");
+
     rebuildCytoscape(newGraph);
 }
 
@@ -117,8 +123,3 @@ function rebuildCytoscape(graphData) {
     cy.json({ elements: graphData.elements });
     cy.layout({ name: "cose", animate: true }).run();
 }
-
-document.getElementById("logout").addEventListener("click", async function () {
-    await fetch('/logout');
-    window.location.href = "/";
-});
