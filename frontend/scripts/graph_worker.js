@@ -1,7 +1,44 @@
-let stations = [];
-let originalCyData = null;
-let cy = null;
-let initialSnapshot = null;
+export let cy = null;
+export let initialSnapshot = null;
+export let stations = [];
+
+export function updateSnapshotFromCurrentGraph() {
+    if (!cy) return;
+
+    initialSnapshot = {
+        elements: cy.json().elements,
+        positions: cy.nodes().map(n => ({
+            id: n.id(),
+            position: { ...n.position() }
+        }))
+    };
+}
+
+export function rebuildFromGraphData(graphData) {
+    cy.elements().remove();
+    cy.add(graphData.elements);
+    cy.layout({ name: "cose", animate: true }).run();
+
+    // IMPORTANT: after layout finishes, refresh snapshot
+    cy.once('layoutstop', () => {
+        updateSnapshotFromCurrentGraph();
+    });
+}
+
+export function restoreInitialGraph() {
+    if (!initialSnapshot) return;
+
+    cy.elements().remove();
+    cy.add(initialSnapshot.elements);
+
+    initialSnapshot.positions.forEach(p => {
+        const node = cy.getElementById(p.id);
+        if (node) node.position(p.position);
+    });
+
+    cy.fit(undefined, 40);
+}
+
 
 const lineColors = [
     "#e6194b", "#3cb44b", "#4363d8", "#f58231", "#911eb4",
@@ -102,7 +139,6 @@ async function tryPathCalculate() {
 document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch("/api/graph");
     const graphData = await res.json();
-    originalCyData = graphData;
     stations = graphData.elements.nodes.map(n => n.data.label);
     createCy(graphData);
 });
@@ -139,15 +175,9 @@ function createCy(graphData) {
 
     // IMPORTANT: snapshot AFTER first layout
     cy.ready(() => {
-        initialSnapshot = {
-            elements: cy.json().elements,
-            positions: cy.nodes().map(n => ({
-                id: n.id(),
-                position: n.position()
-            }))
-        };
-
+        updateSnapshotFromCurrentGraph();
     });
+
 }
 
 
@@ -155,18 +185,4 @@ function rebuildCytoscape(graphData) {
     cy.elements().remove();
     cy.add(graphData.elements);
     cy.layout({ name: "cose", animate: true }).run();
-}
-
-function restoreInitialGraph() {
-    if (!initialSnapshot) return;
-
-    cy.elements().remove();
-    cy.add(initialSnapshot.elements);
-
-    initialSnapshot.positions.forEach(p => {
-        const node = cy.getElementById(p.id);
-        if (node) node.position(p.position);
-    });
-
-    cy.fit(undefined, 30);
 }

@@ -103,28 +103,50 @@ class RouteManager:
     def remove_road(self, u, v):
         if not self.Routes[-1].has_edge(u, v):
             return False
-        
+
         self.Routes.append(self.Routes[-1].copy())
         R = self.Routes[-1]
 
-        # save attributes
+        # save attributes of the removed edge(s)
         old_edges_attrs = []
+        route_numbers = set()
+
         for key, attrs in R[u][v].items():
             old_edges_attrs.append(attrs.copy())
+            route_numbers.add(attrs["number"])
 
-        # compute path
+        # --- build temp graph ---
         temp_G = self.main_graph.copy()
         temp_G.remove_edge(u, v)
 
+        # --- remove nodes belonging to the same route ---
+        nodes_to_remove = set()
+
+        for x, y, attrs in R.edges(data=True):
+            if attrs.get("number") in route_numbers:
+                nodes_to_remove.add(x)
+                nodes_to_remove.add(y)
+
+        # keep endpoints
+        nodes_to_remove.discard(u)
+        nodes_to_remove.discard(v)
+
+        temp_G.remove_nodes_from(nodes_to_remove)
+
+        # --- compute alternative path ---
         astar = AStarTransport(temp_G)
-        result = astar(u, v)
+        result = astar.find_path(u, v)
         path = result["path"]
-        
-        keys_to_remove = list(R[u][v].keys())
-        for k in keys_to_remove:
+        print(path)
+
+        if not path:
+            return False
+
+        # --- remove original edge(s) ---
+        for k in list(R[u][v].keys()):
             R.remove_edge(u, v, key=k)
 
-        # add detour edges for each segment
+        # --- add detour edges using old attributes ---
         for i in range(len(path) - 1):
             a = path[i]
             b = path[i + 1]
@@ -132,6 +154,7 @@ class RouteManager:
                 R.add_edge(a, b, **attrs)
 
         return True
+
 
     def shortest_route_path(self, start, end):
         R = self.Routes[-1]

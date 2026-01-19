@@ -6,7 +6,6 @@ from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from datetime import timedelta
 from pathlib import Path
-import json
 
 from app.core import Security, settings
 
@@ -21,23 +20,51 @@ PAGE_DIR = FRONTEND_DIR / 'pages'
 STATIONS = 100
 DENSITY = 1
 
-G = create_map(
-        STATIONS, 
-        DENSITY,
-        DATA_DIR / "map",
-        DATA_DIR / "station_names.json",
-        min_travel_time=1,    # 1 minute minimum travel time
-        max_travel_time=10,   # 10 minutes maximum travel time  
-        min_traffic=10,       # 10 passengers minimum
-        max_traffic=250       # 250 passengers maximum
-    )
+import pickle
+CACHE_DIR = DATA_DIR / "cache"
+CACHE_DIR.mkdir(exist_ok=True)
 
-rm = RouteManager(G)
-rm.gen_routes(verbose=True)
+RM_CACHE_FILE = CACHE_DIR / f"rm_{STATIONS}nodes_{DENSITY}density.pkl"
+
+if RM_CACHE_FILE.exists():
+    print(f"Loading RouteManager from cache: {RM_CACHE_FILE}")
+    with open(RM_CACHE_FILE, "rb") as f:
+        rm = pickle.load(f)
+else:
+    G = create_map(
+            STATIONS, 
+            DENSITY,
+            DATA_DIR / "map",
+            DATA_DIR / "station_names.json",
+            min_travel_time=1,    # 1 minute minimum travel time
+            max_travel_time=10,   # 10 minutes maximum travel time  
+            min_traffic=10,       # 10 passengers minimum
+            max_traffic=250       # 250 passengers maximum
+        )
+
+    rm = RouteManager(G)
+    rm.gen_routes(verbose=True)
+    with open(RM_CACHE_FILE, "wb") as f:
+        pickle.dump(rm, f)
+
+    print(f"RouteManager cached to {RM_CACHE_FILE}")
+
 
 print("Frontend resolved path:", FRONTEND_DIR)
 
 app = FastAPI(title=settings.APP_NAME)
+
+@app.middleware("http")
+async def disable_static_cache(request: Request, call_next):
+    response = await call_next(request)
+
+    if request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+
+    return response
+
 
 from fastapi.staticfiles import StaticFiles
 
@@ -136,6 +163,20 @@ def get_graph():
     data = multigraph_to_cytoscape_json(rm.Routes[-1])
     return JSONResponse(content = data)
 
+@app.get("/rm_road")
+def rm_road(
+    start: str = Query(..., alias="from"),
+    end: str = Query(..., alias="to")
+):
+    try:
+        if rm.remove_road(start, end):
+            data = multigraph_to_cytoscape_json(rm.Routes[-1])
+            return JSONResponse(content = data)
+        else: raise
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=404)
+
+ 
 @app.get("/user_path")
 def user_path(
     start: str = Query(..., alias="from"),
