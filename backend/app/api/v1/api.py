@@ -163,6 +163,16 @@ def get_graph():
     data = multigraph_to_cytoscape_json(rm.Routes[-1])
     return JSONResponse(content = data)
 
+@app.get("/api/graph_history_len")
+def get_graph():
+    return JSONResponse(content = len(rm.Routes))
+
+@app.get("/ret_graph")
+def get_graph():
+    rm.Routes = [rm.Routes[0]]
+    data = multigraph_to_cytoscape_json(rm.Routes[0])
+    return JSONResponse(content = data)
+
 @app.get("/rm_road")
 def rm_road(
     start: str = Query(..., alias="from"),

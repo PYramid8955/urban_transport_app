@@ -5,15 +5,20 @@ import {
     stations
 } from "./graph_worker.js";
 
+let delFrom = document.getElementById("delFrom");
+let delTo = document.getElementById("delTo");
+let retBtn = document.getElementById("ret-btn");
+
+const res = await fetch('/api/graph_history_len');
+const data = await res.json();
+if (data > 1) retBtn.style.display = 'block';
+
 document.getElementById("logout").addEventListener("click", async function () {
     await fetch('/logout');
     window.location.href = "/";
 });
 
-let delFrom = document.getElementById("delFrom");
-let delTo = document.getElementById("delTo");
-
-document.querySelector(".delete-btn").addEventListener("click", async () => {
+document.querySelector("#delete-btn").addEventListener("click", async () => {
     const from = delFrom.value.trim();
     const to = delTo.value.trim();
     delFrom.value = '';
@@ -31,6 +36,24 @@ document.querySelector(".delete-btn").addEventListener("click", async () => {
     const data = await res.json();
 
     rebuildFromGraphData(data);
+    retBtn.style.display = 'block';
+    document.getElementById("fromInput").value = '';
+    document.getElementById("toInput").value = '';
+    document.getElementById("resultBox").innerHTML = "<div id = 'nothing_to_show'>Nothing to show here yet.</div>";
+
+});
+
+retBtn.addEventListener("click", async () => {
+    delFrom.value = '';
+    delTo.value = '';
+    const res = await fetch('/ret_graph');
+    if (!res.ok) return;
+    const data = await res.json();
+    rebuildFromGraphData(data);
+    retBtn.style.display = 'none';
+    document.getElementById("fromInput").value = '';
+    document.getElementById("toInput").value = '';
+    document.getElementById("resultBox").innerHTML = "<div id = 'nothing_to_show'>Nothing to show here yet.</div>";
 });
 
 function getNeighbors(nodeId) {

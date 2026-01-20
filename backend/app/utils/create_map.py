@@ -7,7 +7,7 @@ from json import loads
 # creates a random connected graph with station names instead of numbers.
 def create_map(nodes, density, path='', station_names_path=None, 
                min_travel_time=1, max_travel_time=60,
-               min_traffic=10, max_traffic=1000):
+               min_traffic=10, max_traffic=1000) -> nx.Graph:
     if nodes < 1:
         raise ValueError("Number of nodes must be at least 1")
     if not 0 <= density <= 1:
