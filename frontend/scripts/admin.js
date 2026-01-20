@@ -2,7 +2,8 @@ import {
     cy,
     rebuildFromGraphData,
     updateSnapshotFromCurrentGraph,
-    stations
+    stations,
+    tryPathCalculate
 } from "./graph_worker.js";
 
 let delFrom = document.getElementById("delFrom");
@@ -35,11 +36,9 @@ document.querySelector("#delete-btn").addEventListener("click", async () => {
 
     const data = await res.json();
 
-    rebuildFromGraphData(data);
+    await rebuildFromGraphData(data);
     retBtn.style.display = 'block';
-    document.getElementById("fromInput").value = '';
-    document.getElementById("toInput").value = '';
-    document.getElementById("resultBox").innerHTML = "<div id = 'nothing_to_show'>Nothing to show here yet.</div>";
+    await tryPathCalculate();
 
 });
 
@@ -49,11 +48,9 @@ retBtn.addEventListener("click", async () => {
     const res = await fetch('/ret_graph');
     if (!res.ok) return;
     const data = await res.json();
-    rebuildFromGraphData(data);
+    await rebuildFromGraphData(data);
     retBtn.style.display = 'none';
-    document.getElementById("fromInput").value = '';
-    document.getElementById("toInput").value = '';
-    document.getElementById("resultBox").innerHTML = "<div id = 'nothing_to_show'>Nothing to show here yet.</div>";
+    await tryPathCalculate();
 });
 
 function getNeighbors(nodeId) {

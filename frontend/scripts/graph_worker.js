@@ -15,13 +15,17 @@ export function updateSnapshotFromCurrentGraph() {
 }
 
 export function rebuildFromGraphData(graphData) {
-    cy.elements().remove();
-    cy.add(graphData.elements);
-    cy.layout({ name: "cose", animate: true }).run();
+    return new Promise(resolve => {
+        cy.elements().remove();
+        cy.add(graphData.elements);
 
-    // IMPORTANT: after layout finishes, refresh snapshot
-    cy.once('layoutstop', () => {
-        updateSnapshotFromCurrentGraph();
+        const layout = cy.layout({ name: "cose", animate: true });
+        layout.run();
+
+        cy.once("layoutstop", () => {
+            updateSnapshotFromCurrentGraph();
+            resolve(); // <-- now it's done
+        });
     });
 }
 
@@ -93,7 +97,7 @@ function setupDropdown(inputId, dropdownId) {
 setupDropdown("fromInput", "fromDropdown");
 setupDropdown("toInput", "toDropdown");
 
-async function tryPathCalculate() {
+export async function tryPathCalculate() {
     const from = document.getElementById("fromInput").value.trim();
     const to = document.getElementById("toInput").value.trim();
 

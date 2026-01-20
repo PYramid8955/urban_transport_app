@@ -120,6 +120,8 @@ body {
     border: 1px solid #d1d4dc;
     box-shadow: 0 10px 18px rgba(0,0,0,0.2);
     overflow: hidden;
+    position: absolute;
+    z-index: 1;
 }
 
 .dropdown li {
@@ -146,6 +148,8 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
+    max-height: 335px;
+    height: fit-content;
     box-shadow: 0 12px 22px rgba(0,0,0,0.15);
 }
 
