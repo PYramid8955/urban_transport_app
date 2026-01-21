@@ -2,17 +2,32 @@
 from app.services import *
 import networkx as nx
 from math import ceil
+from app.models import Route
+from app.utils import RouteDemandCalculator
+from app.utils import sample, rand_num
 
 class RouteManager:
     # the desired route lenght in minutes (approx.), one way
     # using a list to be able to return to the initial graph after removing edges
-    Routes = []
-
-    def __init__(self, G: nx.Graph, route_length = 45, min_inter_station_time = 1, max_inter_station_time = 10):
+    def __init__(self, G: nx.Graph, route_length = 45, min_inter_station_time = 1, max_inter_station_time = 10, verbose: bool = False):
+        self.Routes = []
+        self.Routes_obj = {'obj': [], 'total_demand': 0}
+        self.Garages = {}
+        
         self.main_graph = G
         self.route_length = route_length
         self.min_inter_station_time = min_inter_station_time
         self.max_inter_station_time = max_inter_station_time
+        
+        self.RDC = RouteDemandCalculator(G)
+        self.gen_routes(verbose)
+        self.assign_random_garages(ratio=0.04)
+        print(f'[GARAGES] Chosen garages: {self.Garages}')
+        self.flow_solution = solve_min_cost_flow(
+            G=self.main_graph,
+            routes_obj=self.Routes_obj,
+            garages_supply=self.Garages
+        )
 
     def compute_time(self, path):
         res = 0
@@ -42,7 +57,11 @@ class RouteManager:
         return G, avg_time
 
 
-    def assign_routes(self, R: nx.MultiGraph, route, number, astar):
+    def assign_routes(self, R: nx.MultiGraph, route: list, number: int, astar: AStarTransport):
+        demand = self.RDC.bottleneck_demand(route)
+        self.Routes_obj['obj'].append(Route(route, number, demand))
+        self.Routes_obj['total_demand'] += demand
+        
         for i in range(len(route)-1):
             path = [route[i], route[i+1]] if self.main_graph.has_edge(route[i], route[i+1]) else astar.find_path(route[i], route[i+1])['path']
             for j in range(len(path)-1):
@@ -51,7 +70,7 @@ class RouteManager:
         return [number, route]
 
 
-    def gen_routes(self, verbose=False):
+    def gen_routes(self, verbose:bool = False):
         G = self.main_graph
 
         R = nx.MultiGraph() # routes-only graph
@@ -205,7 +224,74 @@ class RouteManager:
 
         return {'graph': out, 'path': path_processed}
 
+    def assign_random_garages(
+        self,
+        ratio: float = 0.04,          # e.g. 4 garages per 100 nodes
+        max_diff: int = 100,          # max difference between garages
+        min_buses_per_garage: int = 1
+    ):
+        """
+        Randomly selects garage nodes and assigns buses so that:
+        - sum(buses) == total route demand
+        - bus counts are reasonably balanced
+        """
 
+        G = self.main_graph
+        total_demand = int(self.Routes_obj["total_demand"])
+
+        if total_demand <= 0:
+            raise ValueError("Total route demand must be > 0")
+
+        # ---- choose garage nodes ----
+        nodes = list(G.nodes())
+        n_garages = max(1, int(len(nodes) * ratio))
+
+        garage_nodes = sample(nodes, n_garages)
+
+        # mark nodes in graph
+        for n in nodes:
+            G.nodes[n]["is_garage"] = False
+
+        for n in garage_nodes:
+            G.nodes[n]["is_garage"] = True
+
+        # ---- distribute buses ----
+        # start with even split
+        base = total_demand // n_garages
+        remainder = total_demand % n_garages
+
+        buses = [base] * n_garages
+
+        # spread remainder
+        for i in range(remainder):
+            buses[i] += 1
+
+        # introduce randomness but keep balance
+        for _ in range(n_garages * 2):
+            i, j = sample(range(n_garages), 2)
+
+            if buses[i] - buses[j] > max_diff and buses[i] > min_buses_per_garage:
+                delta = rand_num(1, min(max_diff // 2, buses[i] - min_buses_per_garage))
+                buses[i] -= delta
+                buses[j] += delta
+
+        # final safety normalization
+        diff = max(buses) - min(buses)
+        if diff > max_diff:
+            avg = total_demand // n_garages
+            buses = [avg] * n_garages
+            for i in range(total_demand - avg * n_garages):
+                buses[i] += 1
+
+        # ---- store garages ----
+        self.Garages = {
+            garage_nodes[i]: buses[i]
+            for i in range(n_garages)
+        }
+
+        return self.Garages
+
+    
     @staticmethod
     def print_routes_sorted(R):
         edges = []

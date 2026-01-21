@@ -42,8 +42,7 @@ else:
             max_traffic=250       # 250 passengers maximum
         )
 
-    rm = RouteManager(G)
-    rm.gen_routes(verbose=True)
+    rm = RouteManager(G, verbose = True)
     with open(RM_CACHE_FILE, "wb") as f:
         pickle.dump(rm, f)
 
