@@ -120,13 +120,22 @@ document.getElementById("delTo").addEventListener("input", handleInputLocking);
 import { openGarageGraph } from "./garage_graph.js";
 
 function garages(open) {
-  const screen = document.getElementById("Garage_Screen");
+    const screen = document.getElementById("Garage_Screen");
+    const panel = document.getElementById("panel");
 
-  if (open) {
-    screen.style.display = "block";
-    openGarageGraph();
-  } else screen.style.display = "none";
+    if (open) {
+        screen.style.visibility = "visible";
+        screen.style.width = "calc(100vw - 60px)";
+        screen.style.height = "calc(100vh - 60px)";
+        openGarageGraph();
+        panel.style.display = "block";
+    } else {
+        screen.style.width = "20vw";
+        screen.style.height = "20vh";
+        screen.style.visibility = "hidden";
+        panel.style.display = "none";
+    }
 }
 
-document.getElementById("open_bus_flow_map").addEventListener("click", ()=>{garages(true)});
-document.getElementById("close_garage_screen").addEventListener("click", ()=>{garages(false)});
+document.getElementById("open_bus_flow_map").addEventListener("click", () => { garages(true) });
+document.getElementById("close_garage_screen").addEventListener("click", () => { garages(false) });

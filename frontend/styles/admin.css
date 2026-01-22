@@ -21,7 +21,7 @@ body {
     padding: 0 40px;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.33);
     position: relative;
-    z-index: 10;
+    z-index: 8;
 }
 
 .nav-left span {
@@ -186,15 +186,26 @@ body {
 
 #Garage_Screen {
     position: absolute;
-    top: 30px;
-    left: 30px;
-    width: calc(100vw - 60px);
-    height: calc(100vh - 60px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20vw;
+    height: 20vh;
+    transition: .15s linear;
     z-index: 10;
     border-radius: 16px;
     background: #f1f3f8;
     overflow: hidden;
-    box-shadow: 0 0 0px 60px rgb(0 0 0 / 80%);
+}
+
+#panel {
+    z-index: 9;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.442);
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #close_garage_screen {
@@ -224,6 +235,6 @@ body {
 }
 
 #cy-garages {
-    height: 100%;
-    width: 100%;
+    height: calc(100vh - 60px);
+    width: calc(100vw - 60px);
 }
