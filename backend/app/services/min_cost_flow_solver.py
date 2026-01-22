@@ -14,6 +14,7 @@ def solve_min_cost_flow(G, R, routes_obj, garages_supply):
     """
     Returns: networkx.MultiGraph (solution graph)
     """
+    route_station = {}  # route_number -> station_name
 
     routes = routes_obj["obj"]
 
@@ -55,10 +56,22 @@ def solve_min_cost_flow(G, R, routes_obj, garages_supply):
             u = seq[0]
             v = seq[-1]
 
-            cost = min(dist_map.get(u, math.inf), dist_map.get(v, math.inf))
+            du = dist_map.get(u, math.inf)
+            dv = dist_map.get(v, math.inf)
+
+            if du <= dv:
+                cost = du
+                station = u
+            else:
+                cost = dv
+                station = v
 
             if cost < math.inf:
                 add_edge(graph, garage_offset + gi, route_offset + idx, math.inf, cost)
+
+                # remember which station THIS route is supplied at
+                route_station[r.number] = station
+
 
     # --- min cost flow ---
     flow = 0
@@ -98,7 +111,12 @@ def solve_min_cost_flow(G, R, routes_obj, garages_supply):
         sol.add_node(g, is_garage=True, label=g)
 
     for r in route_nodes:
-        sol.add_node(r, is_route=True, label=f"Route {r}")
+        station = route_station.get(r)
+        label = f"R{r}"
+        if station:
+            label += f"\n{station}"
+
+        sol.add_node(r, is_route=True, label=label)
 
 
     for gi, g in enumerate(garage_nodes):
