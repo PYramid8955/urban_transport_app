@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="static/styles/style.css">
     <link rel="stylesheet" href="static/styles/admin.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script type="module" src="static/scripts/graph_worker.js"></script>
+    <script type="module" src="static/scripts/garage_graph.js"></script>
+    <script type="module" src="static/scripts/admin.js"></script>
 </head>
 
 <body>
@@ -19,8 +23,13 @@
             </span>
         </div>
 
-        <div class="nav-right">
-            <a class="admin-btn" href="#" id="logout">User View</a>
+        <div id="right_nav_btns">
+            <div class="nav-right" id="open_bus_flow_map">
+                <a class="admin-btn fa-solid fa-warehouse"></a>
+            </div>
+            <div class="nav-right">
+                <a class="admin-btn" href="#" id="logout">User View</a>
+            </div>
         </div>
     </nav>
 
@@ -53,7 +62,8 @@
                 </div>
 
                 <button class="delete-btn" id="delete-btn">Remove Road</button>
-                <button class="delete-btn" id="ret-btn" style="display: none; margin-top: 20px">Return To Initial Routes</button>
+                <button class="delete-btn" id="ret-btn" style="display: none; margin-top: 20px">Return To Initial
+                    Routes</button>
             </div>
 
             <!-- PANEL 2: FIND ROUTE -->
@@ -72,7 +82,9 @@
                     <ul id="toDropdown" class="dropdown hidden"></ul>
                 </div>
 
-                <div class="result-box" id="resultBox"><div id = 'nothing_to_show'>Nothing to show here yet.</div></div>
+                <div class="result-box" id="resultBox">
+                    <div id='nothing_to_show'>Nothing to show here yet.</div>
+                </div>
 
 
             </div>
@@ -80,8 +92,14 @@
         </div>
     </div>
 
-    <script type="module" src="static/scripts/graph_worker.js"></script>
-    <script type="module" src="static/scripts/admin.js"></script>
+    <div id="Garage_Screen" style="display: none;">
+        <div class="graph-area">
+            <div class="graph-box">
+                <div id="cy-garages"></div>
+            </div>
+        </div>
+        <div id="close_garage_screen" class="fa-solid fa-xmark"></div>
+    </div>
 </body>
 
 </html>

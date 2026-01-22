@@ -49,6 +49,7 @@ else:
     print(f"RouteManager cached to {RM_CACHE_FILE}")
 
 
+# print(rm.Routes_obj)
 print("Frontend resolved path:", FRONTEND_DIR)
 
 app = FastAPI(title=settings.APP_NAME)
@@ -160,6 +161,11 @@ def logout(request: Request):
 @app.get("/api/graph")
 def get_graph():
     data = multigraph_to_cytoscape_json(rm.Routes[-1])
+    return JSONResponse(content = data)
+
+@app.get("/api/bus_supply_graph")
+def get_graph():
+    data = multigraph_to_cytoscape_json(rm.flow_solution)
     return JSONResponse(content = data)
 
 @app.get("/api/graph_history_len")

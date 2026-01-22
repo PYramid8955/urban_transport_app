@@ -6,6 +6,11 @@ from app.models import Route
 from app.utils import RouteDemandCalculator
 from app.utils import sample, rand_num
 
+BUS_CAPACITY = 60
+
+def people_to_buses(people: float) -> int:
+    return max(1, ceil(people / BUS_CAPACITY))
+
 class RouteManager:
     # the desired route lenght in minutes (approx.), one way
     # using a list to be able to return to the initial graph after removing edges
@@ -25,9 +30,11 @@ class RouteManager:
         print(f'[GARAGES] Chosen garages: {self.Garages}')
         self.flow_solution = solve_min_cost_flow(
             G=self.main_graph,
+            R=self.Routes[0],
             routes_obj=self.Routes_obj,
             garages_supply=self.Garages
         )
+        print(self.Routes_obj)
 
     def compute_time(self, path):
         res = 0
@@ -59,6 +66,7 @@ class RouteManager:
 
     def assign_routes(self, R: nx.MultiGraph, route: list, number: int, astar: AStarTransport):
         demand = self.RDC.bottleneck_demand(route)
+        demand = people_to_buses(demand)
         self.Routes_obj['obj'].append(Route(route, number, demand))
         self.Routes_obj['total_demand'] += demand
         

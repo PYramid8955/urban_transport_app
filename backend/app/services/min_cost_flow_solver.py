@@ -4,11 +4,13 @@ from app.services.spfa import spfa
 from app.utils.graph_distances import compute_garage_distances
 import networkx as nx
 
+
 def add_edge(graph, u, v, capacity, cost):
     graph[u].append(FlowEdge(v, capacity, cost, len(graph[v])))
     graph[v].append(FlowEdge(u, 0, -cost, len(graph[u]) - 1))
 
-def solve_min_cost_flow(G, routes_obj, garages_supply):
+
+def solve_min_cost_flow(G, R, routes_obj, garages_supply):
     """
     Returns: networkx.MultiGraph (solution graph)
     """
@@ -39,13 +41,7 @@ def solve_min_cost_flow(G, routes_obj, garages_supply):
 
     for r in routes:
         idx = route_index[r.number]
-        add_edge(
-            graph,
-            route_offset + idx,
-            SINK,
-            r.demand,
-            0
-        )
+        add_edge(graph, route_offset + idx, SINK, r.demand, 0)
 
     # --- garages -> routes ---
     for gi, g in enumerate(garage_nodes):
@@ -59,19 +55,10 @@ def solve_min_cost_flow(G, routes_obj, garages_supply):
             u = seq[0]
             v = seq[-1]
 
-            cost = min(
-                dist_map.get(u, math.inf),
-                dist_map.get(v, math.inf)
-            )
+            cost = min(dist_map.get(u, math.inf), dist_map.get(v, math.inf))
 
             if cost < math.inf:
-                add_edge(
-                    graph,
-                    garage_offset + gi,
-                    route_offset + idx,
-                    math.inf,
-                    cost
-                )
+                add_edge(graph, garage_offset + gi, route_offset + idx, math.inf, cost)
 
     # --- min cost flow ---
     flow = 0
@@ -105,6 +92,14 @@ def solve_min_cost_flow(G, routes_obj, garages_supply):
 
     # --- build solution graph ---
     sol = nx.MultiGraph()
+    
+    # add nodes
+    for g in garage_nodes:
+        sol.add_node(g, is_garage=True, label=g)
+
+    for r in route_nodes:
+        sol.add_node(r, is_route=True, label=f"Route {r}")
+
 
     for gi, g in enumerate(garage_nodes):
         u = garage_offset + gi
@@ -113,11 +108,15 @@ def solve_min_cost_flow(G, routes_obj, garages_supply):
                 used = graph[e.to][e.rev].capacity
                 if used > 0:
                     r_idx = e.to - route_offset
+                    route_number = route_nodes[r_idx]
+
                     sol.add_edge(
                         g,
-                        route_nodes[r_idx],
+                        route_number,
                         flow=used,
-                        cost=e.cost
+                        cost=e.cost,
+                        route=route_number
                     )
+
 
     return sol

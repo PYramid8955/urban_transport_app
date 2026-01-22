@@ -115,3 +115,18 @@ function handleInputLocking() {
 }
 
 document.getElementById("delTo").addEventListener("input", handleInputLocking);
+
+// garage-flow work
+import { openGarageGraph } from "./garage_graph.js";
+
+function garages(open) {
+  const screen = document.getElementById("Garage_Screen");
+
+  if (open) {
+    screen.style.display = "block";
+    openGarageGraph();
+  } else screen.style.display = "none";
+}
+
+document.getElementById("open_bus_flow_map").addEventListener("click", ()=>{garages(true)});
+document.getElementById("close_garage_screen").addEventListener("click", ()=>{garages(false)});

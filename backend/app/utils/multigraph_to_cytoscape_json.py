@@ -6,13 +6,15 @@ def multigraph_to_cytoscape_json(R: nx.MultiGraph, save_path: str | None = None)
     cy_nodes = []
     cy_edges = []
 
-    for node in R.nodes():
+    for node, attrs in R.nodes(data=True):
         cy_nodes.append({
             "data": {
                 "id": node,
-                "label": node
+                "label": node,
+                **attrs   # ← THIS LINE IS THE FIX
             }
         })
+
 
     for u, v, key, data in R.edges(keys=True, data=True):
         edge_id = f"{u}__{v}__{key}"
