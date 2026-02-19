@@ -14,7 +14,7 @@ To optimize pathfinding, the system avoids processing the entire raw graph at on
 * **Hub Identification:** The algorithm identifies "hubs" within these clusters to serve as primary connection points.
 * **Recursive Abstraction:** An abstracted graph is built using these hubs. This process repeats until a single top-level cluster connects the entire network.
 
-Due to project requirements excluding Dijkstra’s algorithm (and not only), $A^*$ is used for pathfinding. While $A^*$ is typically used for point-to-point queries, it is utilized here during the initial phase to calculate Betweenness Centrality.
+Due to project requirements excluding Dijkstra’s algorithm (and not only), A* is used for pathfinding. While A* is typically used for point-to-point queries, it is utilized here during the initial phase to calculate Betweenness Centrality.
 ---
 
 ## Frontend and Features
