@@ -51,7 +51,7 @@ To access the administrative features and the Min-Cost Flow visualization, use t
 
 ```bash
 git clone https://github.com/PYramid8955/year_project.git
-cd year_project
+cd Urban_Transport_App
 ````
 
 ---
