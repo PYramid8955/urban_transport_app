@@ -1,20 +1,50 @@
 # Urban Transport App
 
-> The app was developed to use multiple algorithms in order to generate an efficient route from an initial map (graph).
+An advanced routing engine designed to generate efficient transit paths from complex graph-based maps using hierarchical abstraction and heuristic optimization.
 
-### The backend
-> It works by generating clusters from the initial graph and finding hubs in those, then representing an abstracted graph using those hubs and running the same thing on that, until you get a single route (cluster) that connects the whole routes graph.
-> The sequence in which each node is visited within routes is calculated using simulated annealing.
-> It was a requirement not to use dijkstra (and some other algorithms), therefore A* was used (which is less efficient for Betweeness Centrality, but as it is run only once in the start, it's not a problem).
+---
 
-### The frontend
-> The on the front-end side the user can view the routes and get the fastest route from station A to station B.
-> We also include a log-in infrastructure for admins, that can delete an edge (road in construction), the route being redirrected automatically for that part.
-> Also, the min-cost flow problem is solved for the most efficient way of distributing buses from garages to routes, which can be viewed from admin mode.
-Admin mode access credinals:
-> username: `owner`
-> password: `pass12`
+## Backend Architecture
 
+The backend utilizes a multi-layered approach to handle large-scale graph data and solve complex routing problems.
+
+### 1. Hierarchical Graph Abstraction
+To optimize pathfinding, the system avoids processing the entire raw graph at once:
+* **Clustering:** The initial graph is partitioned into distinct, almost same-sized clusters, (the nodes in each cluster are connected to eachother).
+* **Hub Identification:** The algorithm identifies "hubs" within these clusters to serve as primary connection points.
+* **Recursive Abstraction:** An abstracted graph is built using these hubs. This process repeats until a single top-level cluster connects the entire network.
+
+Due to project requirements excluding Dijkstra’s algorithm (and not only), $A^*$ is used for pathfinding. While $A^*$ is typically used for point-to-point queries, it is utilized here during the initial phase to calculate Betweenness Centrality.
+---
+
+## Frontend and Features
+
+The frontend provides an intuitive interface for both commuters and system administrators.
+
+### User Features
+* **Route Visualization:** Users can view the global network of routes and stations.
+* **Navigation:** Calculates the fastest route between Station A and Station B.
+
+### Admin Mode
+The administrative interface allows for real-time grid management:
+* **Dynamic Rerouting:** Admins can delete specific edges to simulate road construction or closures. The system automatically recalculates and redirects affected routes.
+* **Bus Distribution (Min-Cost Flow):** The app solves the Min-Cost Flow problem to determine the most efficient way to distribute buses from garages to active routes.
+
+
+
+---
+
+## Access Credentials
+
+To access the administrative features and the Min-Cost Flow visualization, use the following credentials:
+
+| Field | Value |
+| :--- | :--- |
+| **Username** | `owner` |
+| **Password** | `pass12` |
+
+
+---
 ## ⚙️ Setup & Installation
 
 ### 1️⃣ Clone the repository
